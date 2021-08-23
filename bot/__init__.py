@@ -851,6 +851,14 @@ except KeyError:
     logging.warning('SERVER_PORT not provided!')
     SERVER_PORT = None
 
+try:
+    BASE_URL_OF_BOT = getConfig(f'https://{HEROKU_APP_NAME}.herokuapp.com')
+    if len(BASE_URL_OF_BOT ) == 0:
+        BASE_URL_OF_BOT = None
+except KeyError:
+    logging.warning('BASE_URL_OF_BOT not provided!')
+    BASE_URL_OF_BOT = BASE_URL_OF_BOT 
+
 updater = tg.Updater(token=BOT_TOKEN)
 bot = updater.bot
 dispatcher = updater.dispatcher
