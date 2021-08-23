@@ -13,7 +13,9 @@ import time
 from telegram.error import BadRequest, Unauthorized
 from telegram import ParseMode, BotCommand
 from telegram.ext import CommandHandler
-from bot import bot, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, TIMEZONE, RESTARTED_GROUP_ID
+
+from wserver import start_server_async
+from bot import bot, dispatcher, updater, botStartTime, IGNORE_PENDING_REQUESTS, TIMEZONE, RESTARTED_GROUP_ID, IS_VPS, SERVER_PORT
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
@@ -88,6 +90,10 @@ def bot_help(update, context):
 
 /{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive
 
+<code>/{BotCommands.MirrorCommand} qb</code> [download_url][magnet_link]: Start mirroring the link to Google Drive using qbittorrent
+
+<code>/{BotCommands.MirrorCommand} qbs</code> [download_url][magnet_link]: Start mirroring the link to Google Drive and Select file before downloading using qbittorrent
+
 /{BotCommands.TarMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.tar) version of the download
 
 /{BotCommands.ZipMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.zip) version of the download
@@ -139,6 +145,10 @@ def bot_help(update, context):
 /{BotCommands.HelpCommand}: To get this message
 
 /{BotCommands.MirrorCommand} [download_url][magnet_link]: Start mirroring the link to Google Drive
+
+<code>/{BotCommands.MirrorCommand} qb</code> [download_url][magnet_link]: Start mirroring the link to Google Drive using qbittorrent
+
+<code>/{BotCommands.MirrorCommand} qbs</code> [download_url][magnet_link]: Start mirroring the link to Google Drive and Select file before downloading using qbittorrent
 
 /{BotCommands.TarMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.tar) version of the download
 
@@ -232,6 +242,10 @@ def main():
             LOGGER.warning(e.message)            
             
     fs_utils.start_cleanup()
+
+    if IS_VPS:
+        asyncio.get_event_loop().run_until_complete(start_server_async(SERVER_PORT))
+
     # Check if the bot is restarting
     if os.path.isfile(".restartmsg"):
         with open(".restartmsg") as f:
