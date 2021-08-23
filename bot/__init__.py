@@ -857,7 +857,7 @@ try:
         BASE_URL_OF_BOT = None
 except KeyError:
     logging.warning('BASE_URL_OF_BOT not provided!')
-    BASE_URL_OF_BOT = BASE_URL_OF_BOT 
+    BASE_URL_OF_BOT = None 
 
 updater = tg.Updater(token=BOT_TOKEN)
 bot = updater.bot
